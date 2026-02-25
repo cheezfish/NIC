@@ -272,7 +272,9 @@
             .hero-line { margin: 0 auto 30px; }
             
             /* HERO IMAGE FIX: Scaled to width perfectly without zoomed crop */
-            .hero-image { display: block; height: auto; aspect-ratio: 4/3; margin-top: 40px; }
+            /* HERO IMAGE FIX: Scaled to width and moved to the very top */
+            .hero-content { order: 2; margin-top: 20px; }
+            .hero-image { order: 1; display: block; height: auto; aspect-ratio: 4/3; margin-top: 0; }
             .hero-image::after { background: linear-gradient(180deg, var(--bg-dark) 0%, transparent 20%, transparent 100%); }
             
             /* ABOUT SECTION FIX: Pushes the image above the text */
