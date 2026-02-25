@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NIC | Nordic International Company</title>
+    <title>NIC | Premium Shisha Engineering</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Oswald:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -12,17 +12,19 @@
         /* --- CORE VARIABLES --- */
         :root {
             --bg-dark: #030303;
+            --bg-elevated: #0a0a0a;
             --text-light: #f4f4f5;
             --primary-red: #D90429; 
             --accent-green: #006233; 
             --glass: rgba(255, 255, 255, 0.02);
-            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-border: rgba(255, 255, 255, 0.08);
             --transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* --- RESET & SETUP --- */
-        * { margin: 0; padding: 0; box-sizing: border-box; cursor: none; }
-        html { scroll-behavior: smooth; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        @media (pointer: fine) { * { cursor: none; } }
+        html { scroll-behavior: smooth; background-color: var(--bg-dark); }
         body {
             font-family: 'Montserrat', sans-serif;
             background-color: var(--bg-dark);
@@ -32,36 +34,41 @@
         }
         ::selection { background: var(--primary-red); color: #fff; }
 
-        /* --- ARCHITECTURAL GRID --- */
+        /* --- PRELOADER --- */
+        #preloader {
+            position: fixed; inset: 0; background: var(--bg-dark); z-index: 10000;
+            display: flex; justify-content: center; align-items: center;
+            transition: transform 1.2s cubic-bezier(0.8, 0, 0.2, 1);
+        }
+        #preloader.hidden { transform: translateY(-100%); }
+        .loader-brand { font-family: 'Oswald', sans-serif; font-size: 3rem; font-weight: 700; letter-spacing: 10px; color: transparent; -webkit-text-stroke: 1px var(--text-light); animation: pulse 1.5s infinite alternate; }
+        @keyframes pulse { 0% { opacity: 0.3; text-shadow: 0 0 0 rgba(255,255,255,0); } 100% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.5); } }
+
+        /* --- ARCHITECTURAL GRID & AMBIENT GLOW --- */
         body::before {
-            content: '';
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            content: ''; position: fixed; inset: 0;
             background-image: 
                 linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-            background-size: 60px 60px;
-            z-index: -3;
-            pointer-events: none;
+            background-size: 60px 60px; z-index: -3; pointer-events: none;
+        }
+        #ambient-glow {
+            position: fixed; top: 0; left: 0; width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(217,4,41,0.08) 0%, transparent 70%);
+            border-radius: 50%; pointer-events: none; z-index: -2;
+            transform: translate(-50%, -50%); transition: opacity 0.3s; opacity: 0;
         }
 
         /* --- ANIMATED CINEMATIC NOISE --- */
         .noise-overlay {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 50; opacity: 0.04;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            position: fixed; inset: 0; pointer-events: none; z-index: 50; opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
             animation: noise-shift 0.2s infinite steps(2);
         }
-        @keyframes noise-shift {
-            0% { transform: translate(0,0); }
-            100% { transform: translate(1%, 1%); }
-        }
+        @keyframes noise-shift { 0% { transform: translate(0,0); } 100% { transform: translate(1%, 1%); } }
 
         /* --- INTERACTIVE CANVAS SMOKE --- */
-        #smokeCanvas {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            z-index: -2; pointer-events: none;
-            filter: blur(8px); /* Softens the volumetric spheres into fluid */
-        }
+        #smokeCanvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; }
 
         /* --- CUSTOM CURSOR --- */
         .cursor-dot, .cursor-outline {
@@ -70,210 +77,258 @@
         }
         .cursor-dot { width: 6px; height: 6px; background-color: var(--text-light); }
         .cursor-outline {
-            width: 35px; height: 35px; border: 1px solid rgba(255, 255, 255, 0.3);
+            width: 35px; height: 35px; border: 1px solid rgba(255, 255, 255, 0.4);
             transition: width 0.2s, height 0.2s, background-color 0.2s, border-color 0.2s;
         }
         .cursor-outline.hover-active {
-            width: 70px; height: 70px; background-color: rgba(217, 4, 41, 0.05);
-            border-color: var(--primary-red);
+            width: 80px; height: 80px; background-color: rgba(217, 4, 41, 0.08);
+            border-color: var(--primary-red); backdrop-filter: blur(2px);
         }
 
         /* --- TYPOGRAPHY & SHEEN --- */
         h1, h2, h3, .brand, .stat { font-family: 'Oswald', sans-serif; text-transform: uppercase; }
         
-        h1 {
-            font-size: clamp(3.5rem, 8vw, 8rem);
-            line-height: 0.95; margin-bottom: 1.5rem; font-weight: 700;
-            letter-spacing: -2px;
-        }
-
-        /* Animated Metallic Sheen on Outline Text */
-        /* 1. Ensure the parent span is the reference point */
-        h1 .outline {
-            position: relative;
-            display: inline-block; /* Add this to wrap the text tightly */
-            color: transparent;
-            -webkit-text-stroke: 1px rgba(255,255,255,0.3);
-        }
-
-        /* 2. Ensure the sheen layer matches the parent exactly */
+        h1 { font-size: clamp(3rem, 7vw, 7.5rem); line-height: 0.95; margin-bottom: 1.5rem; font-weight: 700; letter-spacing: -2px; }
+        
+        /* Metallic Precision Sheen */
+        h1 .outline { position: relative; display: inline-block; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.4); }
         h1 .outline::after {
-            content: "Precision";
-            position: absolute; 
-            left: 0; 
-            top: 0;
-            width: 100%; /* Force it to match the span's width */
-            height: 100%; /* Force it to match the span's height */
-            background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.8) 50%, transparent 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% 100%;
-            animation: sheen 4s infinite linear;
-            -webkit-text-stroke: 0px;
-            pointer-events: none; /* Prevents it from interfering with clicks */
+            content: "Precision"; position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+            background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.9) 50%, transparent 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-size: 200% 100%; animation: sheen 3s infinite linear; pointer-events: none;
         }
-        @keyframes sheen {
-            0% { background-position: 200% 0; }
-            100% { background-position: -200% 0; }
-        }
+        @keyframes sheen { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
         h2 { font-size: clamp(2.5rem, 4vw, 4rem); margin-bottom: 1rem; line-height: 1.1; font-weight: 400; }
-        .subtitle {
-            font-size: 0.85rem; color: var(--primary-red); font-weight: 600;
-            letter-spacing: 5px; margin-bottom: 1.5rem; display: block; text-transform: uppercase;
-        }
+        .subtitle { font-size: 0.85rem; color: var(--primary-red); font-weight: 600; letter-spacing: 5px; margin-bottom: 1.5rem; display: block; text-transform: uppercase; }
         p { font-size: 1.1rem; color: rgba(255, 255, 255, 0.6); max-width: 600px; font-weight: 300; }
 
-        /* --- NAVIGATION & MAGNETIC BUTTON --- */
+        /* --- NAVIGATION --- */
         nav {
             position: fixed; top: 0; width: 100%; padding: 35px 8%;
-            display: flex; justify-content: space-between; align-items: center;
-            z-index: 100;
-            background: linear-gradient(to bottom, rgba(3,3,3,0.9) 0%, rgba(3,3,3,0) 100%);
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
+            background: linear-gradient(to bottom, rgba(3,3,3,0.95) 0%, rgba(3,3,3,0) 100%);
         }
-        .brand {
-            font-size: 2.2rem; font-weight: 700; color: white; text-decoration: none;
-            letter-spacing: 4px; position: relative;
-        }
+        .brand { font-size: 2.2rem; font-weight: 700; color: white; text-decoration: none; letter-spacing: 4px; }
         .brand span { color: var(--primary-red); }
 
-        .magnetic-btn-wrapper {
-            display: inline-block; padding: 20px; /* Interaction area */
-            transform: translate(20px, -20px);
-        }
+        .magnetic-btn-wrapper { display: inline-block; padding: 20px; }
         .cta-btn {
             font-size: 0.8rem; font-weight: 500; text-transform: uppercase; letter-spacing: 2px;
             color: white; text-decoration: none; padding: 14px 28px;
             border: 1px solid var(--glass-border); border-radius: 40px;
             background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);
-            transition: background 0.3s, border-color 0.3s;
-            display: inline-block;
+            transition: background 0.3s, border-color 0.3s, transform 0.2s; display: inline-block;
         }
-        .cta-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
+        .cta-btn:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.4); }
 
-        /* --- HERO --- */
+        /* --- HERO (No Top Gap Grid) --- */
         header {
-            min-height: 100vh; display: flex; flex-direction: column; justify-content: center;
-            padding: 0 8%; position: relative; z-index: 10;
+            width: 100%; height: 100vh; padding: 0 8%;
+            display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 50px;
+            position: relative; z-index: 10;
         }
-        .hero-line {
-            width: 0px; height: 2px; background: var(--primary-red); margin-bottom: 30px;
-            transition: width 1.5s cubic-bezier(0.8, 0, 0.2, 1);
+        .hero-content { position: relative; z-index: 2; margin-top: 40px; }
+        
+        .hero-image {
+            position: relative; width: 100%; height: 70vh; border-radius: 6px; overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8); display: none;
         }
+        @media (min-width: 1024px) { .hero-image { display: block; } }
+        
+        .hero-image img {
+            width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(100%) contrast(1.2) brightness(0.7); transition: var(--transition);
+        }
+        .hero-image:hover img { filter: grayscale(30%) contrast(1.1) brightness(1); transform: scale(1.05); }
+        .hero-image::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(90deg, var(--bg-dark) 0%, transparent 50%, transparent 100%); pointer-events: none;
+        }
+
+        .hero-line { width: 0px; height: 2px; background: var(--primary-red); margin-bottom: 30px; transition: width 1.5s cubic-bezier(0.8, 0, 0.2, 1); }
         .hero-line.active { width: 80px; }
 
         /* --- SECTIONS --- */
-        section { padding: 150px 8%; position: relative; z-index: 10; }
-        .grid-split { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        section { padding: 120px 8%; position: relative; z-index: 10; }
+        
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .about-image-wrapper { position: relative; width: 100%; padding-bottom: 110%; overflow: hidden; border-radius: 6px; }
+        
+        .about-image-wrapper img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;
+            filter: grayscale(90%) contrast(1.3) brightness(0.6); transition: var(--transition);
+        }
+        .about-image-wrapper:hover img { filter: grayscale(10%) contrast(1.1) brightness(0.9); transform: scale(1.05); }
 
-        /* --- GLASS INFO BOX --- */
         .info-box {
             background: var(--glass); border: 1px solid var(--glass-border);
-            padding: 70px 50px; position: relative; border-radius: 4px; overflow: hidden;
+            padding: 50px; position: relative; border-radius: 6px; overflow: hidden; margin-top: 40px;
+            backdrop-filter: blur(5px);
         }
         .info-box::before {
             content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
             background: linear-gradient(90deg, var(--accent-green) 0%, var(--primary-red) 100%);
         }
-        .stat { font-size: clamp(5rem, 8vw, 8rem); color: transparent; -webkit-text-stroke: 1px white; line-height: 0.9; margin-bottom: 10px; }
+        .stat { font-size: clamp(4rem, 6vw, 6rem); color: transparent; -webkit-text-stroke: 1px white; line-height: 0.9; margin-bottom: 10px; }
 
-        /* --- 3D PRODUCT CARDS WITH DYNAMIC GLARE --- */
-        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-top: 60px; perspective: 1200px; }
+        /* --- 3D PRODUCT CARDS + CHROMATIC ABERRATION --- */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; margin-top: 60px; perspective: 1200px; }
         
         .product-card {
-            background: rgba(10, 10, 10, 0.4); padding: 70px 40px; text-align: center;
+            background: var(--bg-elevated); padding: 40px; text-align: center; border-radius: 8px;
             border: 1px solid var(--glass-border); transform-style: preserve-3d; position: relative; overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
         }
         
-        /* The Glare Effect */
+        .card-img { width: 100%; height: 250px; margin-bottom: 30px; border-radius: 4px; overflow: hidden; transform: translateZ(40px); position: relative; z-index: 2; }
+        .card-img img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(100%) brightness(0.8); transition: var(--transition); }
+        
+        .product-card:hover .card-img img { filter: grayscale(0%) brightness(1.1); transform: scale(1.1); }
+        .product-card:hover h3 { text-shadow: 3px 0 0 rgba(217,4,41,0.8), -3px 0 0 rgba(0,255,255,0.8); }
+
         .product-card .glare {
-            position: absolute; top: var(--y, 50%); left: var(--x, 50%);
-            width: 300px; height: 300px;
-            background: radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 60%);
+            position: absolute; top: var(--y, 50%); left: var(--x, 50%); width: 350px; height: 350px;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
             transform: translate(-50%, -50%); pointer-events: none; opacity: 0; transition: opacity 0.4s; z-index: 1;
         }
         .product-card:hover .glare { opacity: 1; }
-
         .product-card::after {
             content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 0; height: 2px; background: var(--primary-red); transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            width: 0; height: 3px; background: var(--primary-red); transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .product-card:hover::after { width: 100%; }
 
-        .product-card h3 { font-size: 3rem; transform: translateZ(40px); position: relative; z-index: 2; font-weight: 400;}
-        .product-card p { margin: 10px auto 0; font-size: 0.85rem; letter-spacing: 3px; color: #777; transform: translateZ(25px); position: relative; z-index: 2;}
-        .product-card .desc { margin-top: 25px; font-size: 0.95rem; color: #555; transform: translateZ(15px); position: relative; z-index: 2; font-weight: 300;}
+        .product-card h3 { font-size: 2.8rem; transform: translateZ(50px); position: relative; z-index: 2; font-weight: 400; transition: text-shadow 0.3s; }
+        .product-card p { margin: 5px auto 0; font-size: 0.85rem; letter-spacing: 4px; color: #777; transform: translateZ(30px); position: relative; z-index: 2;}
+        .product-card .desc { margin-top: 20px; font-size: 0.95rem; color: #888; transform: translateZ(20px); position: relative; z-index: 2; font-weight: 300;}
 
         /* --- INFINITE MARQUEE --- */
         .marquee-wrapper {
-            margin-top: 80px; width: 100vw; position: relative; left: 50%; right: 50%;
+            margin-top: 100px; width: 100vw; position: relative; left: 50%; right: 50%;
             margin-left: -50vw; margin-right: -50vw; overflow: hidden;
-            background: var(--primary-red); padding: 25px 0; transform: rotate(-1.5deg) scale(1.05);
-            box-shadow: 0 0 50px rgba(217, 4, 41, 0.2);
+            background: var(--primary-red); padding: 30px 0; transform: rotate(-1.5deg) scale(1.05);
+            box-shadow: 0 0 60px rgba(217, 4, 41, 0.2); z-index: 20;
         }
         .marquee { display: flex; white-space: nowrap; animation: marquee 25s linear infinite; }
-        .marquee span { font-family: 'Oswald', sans-serif; font-size: 2.2rem; font-weight: 400; color: white; text-transform: uppercase; padding: 0 3vw; }
+        .marquee span { font-family: 'Oswald', sans-serif; font-size: 2.5rem; font-weight: 400; color: white; text-transform: uppercase; padding: 0 3vw; letter-spacing: 2px;}
         .marquee span i { font-style: normal; opacity: 0.4; margin-left: 3vw; font-size: 1.5rem;}
         @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* --- FOOTER --- */
-        footer {
-            margin-top: 100px; border-top: 1px solid var(--glass-border); padding: 120px 8%;
-            text-align: center; position: relative; overflow: hidden;
+        /* --- FOOTER (High Vis Logo) --- */
+        footer { margin-top: 100px; border-top: 1px solid var(--glass-border); padding: 120px 8%; text-align: center; position: relative; }
+        
+        .footer-logo { 
+            font-size: clamp(6rem, 12vw, 10rem); font-family: 'Oswald', sans-serif; font-weight: 700; 
+            color: rgba(255,255,255,0.02); 
+            -webkit-text-stroke: 2px rgba(255,255,255,0.7); 
+            text-shadow: 0 0 40px rgba(255,255,255,0.15); 
+            letter-spacing: 20px; margin-bottom: 20px; 
         }
-        .footer-logo { font-size: 6rem; font-family: 'Oswald', sans-serif; font-weight: 700; color: transparent; -webkit-text-stroke: 1px rgba(255,255,255,0.1); letter-spacing: 20px; margin-bottom: 20px; }
+        
         .origin-badge {
             display: inline-flex; align-items: center; gap: 15px; margin-top: 50px; padding: 12px 30px;
-            background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.05); border-radius: 50px; backdrop-filter: blur(10px);
+            background: rgba(0,0,0,0.8); border: 1px solid rgba(255,255,255,0.15); border-radius: 50px; backdrop-filter: blur(10px);
         }
-        .dot-green { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 10px var(--accent-green);}
-        .dot-red { width: 8px; height: 8px; background: var(--primary-red); border-radius: 50%; box-shadow: 0 0 10px var(--primary-red);}
+        .dot-green { width: 8px; height: 8px; background: var(--accent-green); border-radius: 50%; box-shadow: 0 0 12px var(--accent-green);}
+        .dot-red { width: 8px; height: 8px; background: var(--primary-red); border-radius: 50%; box-shadow: 0 0 12px var(--primary-red);}
 
-        /* --- REVEAL ANIMATIONS --- */
-        .reveal { opacity: 0; transform: translateY(40px); transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1); }
-        .reveal.active { opacity: 1; transform: translateY(0); }
+        /* --- REVEAL ANIMATIONS (Apple-style Blur Reveal) --- */
+        .reveal { 
+            opacity: 0; 
+            transform: translateY(40px); 
+            filter: blur(8px); 
+            transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1); 
+        }
+        .reveal.active { 
+            opacity: 1; 
+            transform: translateY(0); 
+            filter: blur(0); 
+        }
 
-        /* --- MOBILE --- */
+        /* --- MOBILE CTA --- */
+        .mobile-cta-bar {
+            display: none; position: fixed; bottom: 20px; left: 5%; right: 5%;
+            background: rgba(10, 10, 10, 0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 50px;
+            padding: 12px 25px; z-index: 1000; justify-content: space-between; align-items: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+        .mobile-cta-btn {
+            background: var(--primary-red); color: white; text-decoration: none;
+            padding: 10px 24px; border-radius: 30px; font-size: 0.75rem; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        /* --- MOBILE SPECIFIC STYLES --- */
         @media (max-width: 768px) {
-            .grid-split { grid-template-columns: 1fr; gap: 50px; }
+            header { grid-template-columns: 1fr; text-align: center; height: auto; min-height: 100vh; padding-top: 120px; padding-bottom: 60px; }
+            .hero-line { margin: 0 auto 30px; }
+            .about-grid { grid-template-columns: 1fr; gap: 50px; }
             nav { padding: 25px 5%; }
-            section { padding: 100px 5%; }
-            .cursor-dot, .cursor-outline, #smokeCanvas { display: none; } /* Disable heavy FX on mobile */
-            .magnetic-btn-wrapper { transform: none; padding: 0; }
+            .magnetic-btn-wrapper { display: none; }
+            .mobile-cta-bar { display: flex; }
+            section { padding: 80px 5%; }
+            .cursor-dot, .cursor-outline, #ambient-glow { display: none; }
+            .product-grid { gap: 40px; }
+            .product-card { padding: 30px 20px; }
+            .card-img { height: 200px; }
+            .marquee { animation: marquee 8s linear infinite; } 
+            .footer-logo { letter-spacing: 10px; -webkit-text-stroke: 1.5px rgba(255,255,255,0.6); }
         }
     </style>
 </head>
 <body>
 
+    <!-- Cinematic Preloader -->
+    <div id="preloader">
+        <div class="loader-brand">NIC.</div>
+    </div>
+
+    <!-- Background Elements -->
+    <div id="ambient-glow"></div>
     <div class="noise-overlay"></div>
     <canvas id="smokeCanvas"></canvas>
 
+    <!-- Desktop Custom Cursor -->
     <div class="cursor-dot"></div>
     <div class="cursor-outline"></div>
 
     <nav>
         <a href="#" class="brand interactive">NIC<span>.</span></a>
-        <!-- Magnetic Area Wrapper -->
         <div class="magnetic-btn-wrapper">
             <a href="mailto:info@nicfactory.com" class="cta-btn interactive magnetic-btn">Contact Team</a>
         </div>
     </nav>
 
+    <!-- Mobile Sticky Action Bar -->
+    <div class="mobile-cta-bar">
+        <span style="font-size: 0.8rem; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: white;">Global Supply</span>
+        <a href="mailto:info@nicfactory.com" class="mobile-cta-btn">Connect</a>
+    </div>
+
     <header>
-        <div class="hero-line reveal"></div>
-        <span class="subtitle reveal" style="transition-delay: 0.1s;">Nordic International Company</span>
-        <h1 class="reveal" style="transition-delay: 0.2s;">
-            <span class="outline">Precision</span><br>
-            Tobacco<br>
-            Engineering.
-        </h1>
-        <p class="reveal" style="transition-delay: 0.3s; margin-top: 25px;">
-            Merging Scandinavian standards with 20 years of manufacturing heritage. The new global benchmark for premium shisha.
-        </p>
+        <div class="hero-content">
+            <div class="hero-line reveal"></div>
+            <span class="subtitle reveal" style="transition-delay: 0.1s;">Nordic International Company</span>
+            <!-- HTML completely restored, text is fully intact -->
+            <h1 class="reveal" style="transition-delay: 0.2s;">
+                <span class="outline">Precision</span><br>
+                Tobacco<br>
+                Engineering.
+            </h1>
+            <p class="reveal" style="transition-delay: 0.3s;">
+                Merging Scandinavian standards with 20 years of manufacturing heritage. The new global benchmark for premium shisha.
+            </p>
+        </div>
+        <div class="hero-image reveal interactive" style="transition-delay: 0.4s;">
+            <img src="https://images.unsplash.com/photo-1574751749605-0f1e41b6cf67?q=80&w=1200&auto=format&fit=crop" alt="Premium Shisha Pipe">
+        </div>
     </header>
 
     <section id="about">
-        <div class="grid-split">
+        <div class="about-grid">
             <div class="reveal">
                 <h2>Nordic Standard.</h2>
                 <p style="margin-bottom: 25px;">
@@ -282,13 +337,17 @@
                 <p>
                     We don't just blend flavors; we engineer consistency. Our facility combines international management with local craftsmanship to produce a product that rivals the top global brands.
                 </p>
+                
+                <div class="info-box interactive">
+                    <div class="stat">20+</div>
+                    <h3 style="letter-spacing: 2px; margin-bottom: 15px; font-weight: 400;">Years Heritage</h3>
+                    <p style="font-size: 0.95rem; color: #aaa;">
+                        Led by a syndicate of international tobacco experts and specialized local artisans.
+                    </p>
+                </div>
             </div>
-            <div class="info-box reveal interactive">
-                <div class="stat">20+</div>
-                <h3 style="letter-spacing: 2px; margin-bottom: 15px; font-weight: 400;">Years Heritage</h3>
-                <p style="font-size: 0.95rem; color: #aaa;">
-                    Led by a syndicate of international tobacco experts and specialized local artisans.
-                </p>
+            <div class="about-image-wrapper reveal interactive">
+                <img src="https://images.unsplash.com/photo-1655855055440-bb76fc92e1ba?q=80&w=1000&auto=format&fit=crop" alt="Dark Tobacco Cultivation">
             </div>
         </div>
     </section>
@@ -300,18 +359,21 @@
         <div class="product-grid">
             <div class="product-card reveal interactive tilt-card">
                 <div class="glare"></div>
+                <div class="card-img"><img src="https://images.unsplash.com/photo-1635548308183-45920db8ec88?q=80&w=600&auto=format&fit=crop" alt="50g Shisha Packaging"></div>
                 <h3>50g</h3>
                 <p>POCKET EDITION</p>
                 <div class="desc">High-margin retail & sampling</div>
             </div>
             <div class="product-card reveal interactive tilt-card" style="transition-delay: 0.1s;">
                 <div class="glare"></div>
+                <div class="card-img"><img src="https://images.unsplash.com/photo-1729460728261-436ce9d926a0?q=80&w=600&auto=format&fit=crop" alt="250g Shisha Packaging"></div>
                 <h3>250g</h3>
                 <p>HOME EDITION</p>
                 <div class="desc">The enthusiast standard</div>
             </div>
             <div class="product-card reveal interactive tilt-card" style="transition-delay: 0.2s;">
                 <div class="glare"></div>
+                <div class="card-img"><img src="https://plus.unsplash.com/premium_photo-1661898406235-eb4cb51e2fa2?q=80&w=600&auto=format&fit=crop" alt="1KG Lounge Packaging"></div>
                 <h3>1KG</h3>
                 <p>LOUNGE EDITION</p>
                 <div class="desc">Professional HORECA supply</div>
@@ -338,184 +400,215 @@
         <div class="footer-logo reveal">NIC</div>
         <p class="reveal" style="margin: 0 auto; font-size: 0.85rem; letter-spacing: 6px; text-transform: uppercase;">Nordic International Company</p>
         <br><br>
-        <a href="mailto:info@nic-shisha.com" class="interactive reveal" style="color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 5px; transition: 0.3s; font-weight: 300;">
-            info@nic-shisha.com
+        <a href="mailto:info@nicfactory.com" class="interactive reveal" style="color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 5px; transition: 0.3s; font-weight: 500; font-size: 1.1rem; letter-spacing: 2px;">
+            info@nicfactory.com
         </a>
         <br>
-        <div class="origin-badge reveal interactive">
+        <div class="origin-badge reveal interactive" style="margin-bottom: 50px;">
             <div class="dot-green"></div><div class="dot-red"></div>
-            <span style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: #aaa;">PRODUCED IN MOROCCO</span>
+            <span style="font-size: 0.75rem; font-weight: 600; letter-spacing: 2px; color: #fff;">PRODUCED IN MOROCCO</span>
         </div>
     </footer>
 
     <script>
-        // --- 1. Custom Cursor & Hover Effects ---
-        const cursorDot = document.querySelector('.cursor-dot');
-        const cursorOutline = document.querySelector('.cursor-outline');
-        const interactives = document.querySelectorAll('.interactive');
+        const isMobile = window.innerWidth <= 768;
 
-        window.addEventListener('mousemove', (e) => {
-            const posX = e.clientX; const posY = e.clientY;
-            cursorDot.style.left = `${posX}px`; cursorDot.style.top = `${posY}px`;
-            cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 400, fill: "forwards" });
+        // --- PRELOADER LOGIC ---
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('preloader').classList.add('hidden');
+            }, 800); 
         });
 
-        interactives.forEach(el => {
-            el.addEventListener('mouseenter', () => cursorOutline.classList.add('hover-active'));
-            el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hover-active'));
-        });
+        // --- DESKTOP SPECIFIC FX (Cursor, Magnet, Glow) ---
+        if (!isMobile) {
+            const cursorDot = document.querySelector('.cursor-dot');
+            const cursorOutline = document.querySelector('.cursor-outline');
+            const glow = document.getElementById('ambient-glow');
+            const interactives = document.querySelectorAll('.interactive');
 
-        // --- 2. Magnetic Button Logic ---
-        const magneticWrapper = document.querySelector('.magnetic-btn-wrapper');
-        const magneticBtn = document.querySelector('.magnetic-btn');
-        
-        magneticWrapper.addEventListener('mousemove', (e) => {
-            const rect = magneticWrapper.getBoundingClientRect();
-            const x = e.clientX - rect.left - rect.width / 2;
-            const y = e.clientY - rect.top - rect.height / 2;
-            magneticBtn.style.transform = `translate(${x * 0.3}px, ${y * 0.3}px)`;
-        });
-        magneticWrapper.addEventListener('mouseleave', () => {
-            magneticBtn.style.transform = `translate(0px, 0px)`;
-            magneticBtn.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-        });
-        magneticWrapper.addEventListener('mouseenter', () => {
-            magneticBtn.style.transition = 'none';
-        });
-
-        // --- 3. 3D Tilt Effect & Dynamic Glare for Cards ---
-        const cards = document.querySelectorAll('.tilt-card');
-        cards.forEach(card => {
-            card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+            window.addEventListener('mousemove', (e) => {
+                const posX = e.clientX; const posY = e.clientY;
+                cursorDot.style.left = `${posX}px`; cursorDot.style.top = `${posY}px`;
+                cursorOutline.animate({ left: `${posX}px`, top: `${posY}px` }, { duration: 300, fill: "forwards" });
                 
-                // Set CSS variables for glare position
-                card.style.setProperty('--x', `${x}px`);
-                card.style.setProperty('--y', `${y}px`);
-                
-                // Tilt logic
-                const centerX = rect.width / 2; const centerY = rect.height / 2;
-                const rotateX = ((y - centerY) / centerY) * -8; 
-                const rotateY = ((x - centerX) / centerX) * 8;
-                card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                glow.style.left = `${posX}px`; glow.style.top = `${posY}px`;
+                glow.style.opacity = '1';
             });
+
+            window.addEventListener('mouseout', () => glow.style.opacity = '0');
+
+            interactives.forEach(el => {
+                el.addEventListener('mouseenter', () => cursorOutline.classList.add('hover-active'));
+                el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hover-active'));
+            });
+
+            // Magnetic Button
+            const magneticWrapper = document.querySelector('.magnetic-btn-wrapper');
+            const magneticBtn = document.querySelector('.magnetic-btn');
             
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
-                card.style.transition = `transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)`;
+            magneticWrapper.addEventListener('mousemove', (e) => {
+                const rect = magneticWrapper.getBoundingClientRect();
+                const x = e.clientX - rect.left - rect.width / 2;
+                const y = e.clientY - rect.top - rect.height / 2;
+                magneticBtn.style.transform = `translate(${x * 0.4}px, ${y * 0.4}px) scale(1.05)`;
             });
-            card.addEventListener('mouseenter', () => card.style.transition = `none`);
-        });
+            magneticWrapper.addEventListener('mouseleave', () => {
+                magneticBtn.style.transform = `translate(0px, 0px) scale(1)`;
+                magneticBtn.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            });
+            magneticWrapper.addEventListener('mouseenter', () => magneticBtn.style.transition = 'none');
+        }
 
-        // --- 4. Scroll Reveal Animation ---
+        // --- 3D TILT EFFECT (Desktop & Mobile) ---
+        const cards = document.querySelectorAll('.tilt-card');
+        
+        if (!isMobile) {
+            cards.forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left; const y = e.clientY - rect.top;
+                    card.style.setProperty('--x', `${x}px`); card.style.setProperty('--y', `${y}px`);
+                    
+                    const centerX = rect.width / 2; const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -10; 
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)`;
+                    card.style.transition = `transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)`;
+                });
+                card.addEventListener('mouseenter', () => card.style.transition = `none`);
+            });
+        } else {
+            // Mobile Scroll Tilt
+            window.addEventListener('scroll', () => {
+                const viewHeight = window.innerHeight;
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const centerOffset = (rect.top + rect.height / 2) - (viewHeight / 2);
+                    let rotateX = (centerOffset / viewHeight) * 30; 
+                    rotateX = Math.max(-15, Math.min(15, rotateX)); 
+                    card.style.transform = `perspective(800px) rotateX(${rotateX}deg)`;
+                });
+            });
+        }
+
+        // --- SCROLL REVEAL (Cinematic Blur) ---
         const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('active'); });
+            entries.forEach(entry => { 
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                } 
+            });
         }, { threshold: 0.15, rootMargin: "0px 0px -50px 0px" });
+        
         document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 
-        // --- 5. INTERACTIVE VOLUMETRIC SMOKE CANVAS (Desktop Only) ---
-        if (window.innerWidth > 768) {
-            const canvas = document.getElementById('smokeCanvas');
-            const ctx = canvas.getContext('2d');
-            let width, height;
-            let particles = [];
-            let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 };
-            let lastMouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        // --- ABSOLUTE FIREFOX FIX: OFF-SCREEN CANVAS SMOKE ENGINE ---
+        const canvas = document.getElementById('smokeCanvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles =[];
+        let mouse = { x: window.innerWidth / 2, y: window.innerHeight / 2, vx: 0, vy: 0 };
+        let lastMouse = { x: window.innerWidth / 2, y: window.innerHeight / 2 };
+        
+        const MAX_PARTICLES = isMobile ? 20 : 60;
 
-            function resize() {
-                width = canvas.width = window.innerWidth;
-                height = canvas.height = window.innerHeight;
-            }
-            window.addEventListener('resize', resize);
-            resize();
+        // 1. Generate the Master Smoke Sprite
+        const puffCanvas = document.createElement('canvas');
+        puffCanvas.width = 256; puffCanvas.height = 256;
+        const pCtx = puffCanvas.getContext('2d');
+        const masterGrad = pCtx.createRadialGradient(128, 128, 0, 128, 128, 128);
+        masterGrad.addColorStop(0, 'rgba(210, 210, 220, 1)'); 
+        masterGrad.addColorStop(1, 'rgba(210, 210, 220, 0)'); 
+        pCtx.fillStyle = masterGrad;
+        pCtx.beginPath();
+        pCtx.arc(128, 128, 128, 0, Math.PI * 2);
+        pCtx.fill();
 
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        if (!isMobile) {
             window.addEventListener('mousemove', (e) => {
                 lastMouse.x = mouse.x; lastMouse.y = mouse.y;
                 mouse.x = e.clientX; mouse.y = e.clientY;
                 mouse.vx = mouse.x - lastMouse.x;
                 mouse.vy = mouse.y - lastMouse.y;
 
-                // If mouse moves somewhat fast, spawn extra smoke on cursor
-                if (Math.abs(mouse.vx) > 3 || Math.abs(mouse.vy) > 3) {
+                if ((Math.abs(mouse.vx) > 3 || Math.abs(mouse.vy) > 3) && particles.length < MAX_PARTICLES + 10) {
                     particles.push(new Particle(mouse.x, mouse.y, true));
                 }
             });
+        }
 
-            class Particle {
-                constructor(x, y, isMouse = false) {
-                    this.x = x || Math.random() * width;
-                    // Base smoke spawns from very bottom
-                    this.y = y || height + Math.random() * 100 + 50; 
-                    this.size = Math.random() * 150 + 100; // Large for volume
-                    
-                    if (isMouse) {
-                        this.vx = mouse.vx * 0.03 + (Math.random() - 0.5) * 0.5;
-                        this.vy = mouse.vy * 0.03 + (Math.random() - 0.5) * 0.5 - 0.5;
-                    } else {
-                        this.vx = (Math.random() - 0.5) * 0.5;
-                        this.vy = -(Math.random() * 1.5 + 0.5); // Drift up slowly
-                    }
-                    
-                    this.life = 0;
-                    this.maxLife = Math.random() * 250 + 150;
-                    // Super low alpha creates the milky blended "fluid" look
-                    this.alpha = Math.random() * 0.03 + 0.01; 
+        class Particle {
+            constructor(x, y, isMouse = false) {
+                this.x = x || Math.random() * width;
+                this.y = y || height + 100; 
+                this.size = Math.random() * 150 + 100; 
+                
+                if (isMouse) {
+                    this.vx = mouse.vx * 0.05 + (Math.random() - 0.5);
+                    this.vy = mouse.vy * 0.05 + (Math.random() - 0.5) - 0.5;
+                } else {
+                    this.vx = (Math.random() - 0.5) * 0.5;
+                    this.vy = -(Math.random() * 1.5 + 0.5); 
                 }
+                
+                this.life = 0;
+                this.maxLife = Math.random() * 300 + 150;
+                this.alpha = Math.random() * 0.02 + 0.01; 
+            }
 
-                update() {
-                    this.x += this.vx;
-                    this.y += this.vy;
-                    this.life++;
-                    this.size += 0.3; // Expand as gas dissipates
+            update() {
+                this.x += this.vx; this.y += this.vy;
+                this.life++; this.size += 0.5;
 
-                    // Mouse Wind Force Interaction
-                    let dx = mouse.x - this.x;
-                    let dy = mouse.y - this.y;
+                if (!isMobile) {
+                    let dx = mouse.x - this.x; let dy = mouse.y - this.y;
                     let dist = Math.sqrt(dx * dx + dy * dy);
-                    
-                    if (dist < 250) { // Interaction radius
-                        let force = (250 - dist) / 250;
-                        this.vx -= (dx / dist) * force * 0.05; // Gently push away
+                    if (dist < 300) { 
+                        let force = (300 - dist) / 300;
+                        this.vx -= (dx / dist) * force * 0.05; 
                         this.vy -= (dy / dist) * force * 0.05;
                     }
                 }
-
-                draw() {
-                    let progress = this.life / this.maxLife;
-                    let currentAlpha = this.alpha * Math.sin(progress * Math.PI); // Fade in/out
-                    
-                    let grad = ctx.createRadialGradient(this.x, this.y, 0, this.x, this.y, this.size);
-                    grad.addColorStop(0, `rgba(220, 220, 225, ${currentAlpha})`);
-                    grad.addColorStop(1, 'rgba(220, 220, 225, 0)');
-                    
-                    ctx.fillStyle = grad;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
             }
 
-            function animateSmoke() {
-                ctx.clearRect(0, 0, width, height);
-
-                // Continually spawn base smoke from the bottom
-                if (particles.length < 90 && Math.random() < 0.25) {
-                    particles.push(new Particle());
-                }
-
-                for (let i = particles.length - 1; i >= 0; i--) {
-                    let p = particles[i];
-                    p.update();
-                    p.draw();
-                    if (p.life >= p.maxLife || p.size > 500) {
-                        particles.splice(i, 1);
-                    }
-                }
-                requestAnimationFrame(animateSmoke);
+            draw() {
+                let progress = this.life / this.maxLife;
+                let currentAlpha = this.alpha * Math.sin(progress * Math.PI); 
+                
+                ctx.globalAlpha = Math.max(0, currentAlpha);
+                ctx.drawImage(puffCanvas, this.x - this.size, this.y - this.size, this.size * 2, this.size * 2);
             }
-            animateSmoke();
         }
+
+        function animateSmoke() {
+            ctx.clearRect(0, 0, width, height);
+
+            if (particles.length < MAX_PARTICLES && Math.random() < 0.3) {
+                particles.push(new Particle());
+            }
+
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.update();
+                p.draw();
+                if (p.life >= p.maxLife || p.size > 800) {
+                    particles.splice(i, 1);
+                }
+            }
+            requestAnimationFrame(animateSmoke);
+        }
+        animateSmoke();
     </script>
 </body>
 </html>
